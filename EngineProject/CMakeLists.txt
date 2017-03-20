@@ -1,4 +1,4 @@
-aux_source_directory("./main" sources)
+aux_source_directory("./main" MAIN_SOURCES)
 
 file(GLOB_RECURSE resources "./data")
 
@@ -16,6 +16,10 @@ else()
     set(includes
         PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 endif()
+
+include_directories(${includes})
+file(GLOB VECTORMATH_INCLUDES "include/vectormath/ppu/cpp/*.*" "include/vectormath/scalar/cpp/*.*" "include/vectormath/spu/cpp/*.*" "include/vectormath/SSE/cpp/*.*")
+file(GLOB EASTL_INCLUDES "include/EASTL/*.*" "include/EASTL/bonus/*.*" "include/EASTL/internal/*.*")
 
 set(libraries PRIVATE ${CMAKE_THREAD_LIBS_INIT})
 
@@ -47,11 +51,12 @@ else()
     HINTS "${VULKEN_SDK}/${LIBSOURCE_DIR}" "${VULKEN_SDK}/x86_64/lib" )
 endif()
 
+
 if(WIN32)
-    add_executable(FunnyEngine WIN32 ${sources} ${resources})
+    add_executable(FunnyEngine WIN32 ${MAIN_SOURCES} ${VECTORMATH_INCLUDES} ${EASTL_INCLUDES})
     target_compile_definitions(FunnyEngine ${definitions})
     target_include_directories(FunnyEngine ${includes})
-    target_link_libraries(FunnyEngine ${libraries} ${VULKAN_LOADER})
+    target_link_libraries(FunnyEngine ${libraries} ${VULKAN_LOADER} ${ENGINE_LIBRARIES})
 else()
 
 endif()

@@ -72,68 +72,27 @@ find_path(SPIRV_TOOLS_INCLUDE_DIR spirv-tools/libspirv.h HINTS "${VULKEN_SDK}/sp
                                                                DOC "Path to spirv-tools/libspirv.h")
 
 if (WIN32)
-    set (GLSLANG_SEARCH_PATH "${VULKEN_SDK}/glslang/${BUILDTGT_DIR}/glslang/Release"
-                             "${VULKEN_SDK}/glslang/${BUILDTGT_DIR}/glslang/OSDependent/Windows/Release"
-                             "${VULKEN_SDK}/glslang/${BUILDTGT_DIR}/hlsl/Release"
-                             "${VULKEN_SDK}/glslang/${BUILDTGT_DIR}/OGLCompilersDLL/Release"
-                             "${VULKEN_SDK}/glslang/${BUILDTGT_DIR}/SPIRV/Release" )
-    set (SPIRV_TOOLS_SEARCH_PATH "${VULKEN_SDK}/spirv-tools/${BUILDTGT_DIR}/source/Release")
+    set (EASTL_SEARCH_PATH "ThirdLibs/EASTL/Release")
 else()
-    set (GLSLANG_SEARCH_PATH "${VULKEN_SDK}/glslang/build/install/lib" "${VULKEN_SDK}/x86_64/lib/glslang" )
-    set (SPIRV_TOOLS_SEARCH_PATH "${VULKEN_SDK}/spirv-tools/build" "${VULKEN_SDK}/x86_64/lib/spirv-tools" )
+    set (EASTL_SEARCH_PATH "ThirdLibs/EASTL/Release")
 endif()
 
-find_library(GLSLANG_LIB NAMES glslang
-             HINTS ${GLSLANG_SEARCH_PATH} )
+find_library(EASTL_LIB NAMES EASTL
+             HINTS ${EASTL_SEARCH_PATH} )
 
-find_library(OGLCompiler_LIB NAMES OGLCompiler
-             HINTS ${GLSLANG_SEARCH_PATH} )
-
-find_library(OSDependent_LIB NAMES OSDependent
-             HINTS ${GLSLANG_SEARCH_PATH} )
-
-find_library(HLSL_LIB NAMES HLSL
-             HINTS ${GLSLANG_SEARCH_PATH} )
-
-find_library(SPIRV_LIB NAMES SPIRV
-             HINTS ${GLSLANG_SEARCH_PATH} )
-
-find_library(SPIRV_TOOLS_LIB NAMES SPIRV-Tools
-             HINTS ${SPIRV_TOOLS_SEARCH_PATH} )
 
 # On Windows, we must pair Debug and Release appropriately
 if (WIN32)
-    set (GLSLANG_DEBUG_SEARCH_PATH "${VULKEN_SDK}/glslang/${BUILDTGT_DIR}/glslang/Debug"
-                                   "${VULKEN_SDK}/glslang/${BUILDTGT_DIR}/glslang/OSDependent/Windows/Debug"
-                                   "${VULKEN_SDK}/glslang/${BUILDTGT_DIR}/hlsl/Debug"
-                                   "${VULKEN_SDK}/glslang/${BUILDTGT_DIR}/OGLCompilersDLL/Debug"
-                                   "${VULKEN_SDK}/glslang/${BUILDTGT_DIR}/SPIRV/Debug")
-    set (SPIRV_TOOLS_DEBUG_SEARCH_PATH "${VULKEN_SDK}/spirv-tools/${BUILDTGT_DIR}/source/Debug")
+    set (EASTL_DEBUG_SEARCH_PATH "ThirdLibs/EASTL//Debug")
 
- #   add_library(glslang     STATIC IMPORTED)
- #   add_library(OGLCompiler STATIC IMPORTED)
- #   add_library(OSDependent STATIC IMPORTED)
- #   add_library(HLSL        STATIC IMPORTED)
- #   add_library(SPIRV       STATIC IMPORTED)
-     add_library(Loader      STATIC IMPORTED)
- #   add_library(SPIRV-Tools STATIC IMPORTED)
+    add_library(EASTL   STATIC IMPORTED)
 
-    find_library(GLSLANG_DLIB NAMES glslangd
-                 HINTS ${GLSLANG_DEBUG_SEARCH_PATH} )
-    find_library(OGLCompiler_DLIB NAMES OGLCompilerd
-                 HINTS ${GLSLANG_DEBUG_SEARCH_PATH} )
-    find_library(OSDependent_DLIB NAMES OSDependentd
-                 HINTS ${GLSLANG_DEBUG_SEARCH_PATH} )
-    find_library(HLSL_DLIB NAMES HLSLd
-                 HINTS ${GLSLANG_DEBUG_SEARCH_PATH} )
-    find_library(SPIRV_DLIB NAMES SPIRVd
-                 HINTS ${GLSLANG_DEBUG_SEARCH_PATH} )
-    find_library(SPIRV_TOOLS_DLIB NAMES SPIRV-Tools
-                 HINTS ${SPIRV_TOOLS_DEBUG_SEARCH_PATH} )
+    find_library(EASTL_DLIB NAMES EASTL
+                 HINTS ${EASTL_DEBUG_SEARCH_PATH} )
 
-#    set_target_properties(glslang PROPERTIES
-#                         IMPORTED_LOCATION       "${GLSLANG_LIB}"
-#                         IMPORTED_LOCATION_DEBUG "${GLSLANG_DLIB}")
+    set_target_properties(EASTL PROPERTIES
+                         IMPORTED_LOCATION       "${EASTL_LIB}"
+                         IMPORTED_LOCATION_DEBUG "${EASTL_DLIB}")
 #    set_target_properties(OGLCompiler PROPERTIES
 #                         IMPORTED_LOCATION       "${OGLCompiler_LIB}"
 #                         IMPORTED_LOCATION_DEBUG "${OGLCompiler_DLIB}")
@@ -150,11 +109,9 @@ if (WIN32)
 #                         IMPORTED_LOCATION       "${SPIRV_TOOLS_LIB}"
 #                         IMPORTED_LOCATION_DEBUG "${SPIRV_TOOLS_DLIB}")
 
-    set (GLSLANG_LIBRARIES glslang OGLCompiler OSDependent HLSL SPIRV)
-    set (SPIRV_TOOLS_LIBRARIES SPIRV-Tools)
+    set (ENGINE_LIBRARIES EASTL)
 else ()
-    set (GLSLANG_LIBRARIES ${GLSLANG_LIB} ${OGLCompiler_LIB} ${OSDependent_LIB} ${HLSL_LIB} ${SPIRV_LIB})
-    set (SPIRV_TOOLS_LIBRARIES ${SPIRV_TOOLS_LIB})
+    set (ENGINE_LIBRARIES ${GLSLANG_LIB} ${OGLCompiler_LIB} ${OSDependent_LIB} ${HLSL_LIB} ${SPIRV_LIB})
 endif()
 
 # to run with source glslang libs/headers
